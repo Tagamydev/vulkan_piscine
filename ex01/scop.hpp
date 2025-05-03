@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/02 23:26:38 by samusanc          #+#    #+#             */
-/*   Updated: 2025/05/03 18:17:36 by samusanc         ###   ########.fr       */
+/*   Updated: 2025/05/03 20:15:54 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@
 # include <iostream>
 # include <string>
 # include <cstdlib>
+# include <vector>
+# include <fstream>
 
 const uint32_t WIDTH = 800;
 const uint32_t HEIGHT = 600;
@@ -46,6 +48,12 @@ namespace scop {
 	};
 
 	class pipeline{
+		public:
+			pipeline(std::string& vertFilepath, std::string& fragFilepath);
+			
+		private:
+			static std::vector<char> readFile(const std::string& filepath);
+			void createGraphicsPipeline(std::string& vertFilepath, std::string& fragFilepath);
 
 	};
 
