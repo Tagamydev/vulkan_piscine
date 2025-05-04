@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 00:33:57 by samusanc          #+#    #+#             */
-/*   Updated: 2025/05/04 14:43:19 by samusanc         ###   ########.fr       */
+/*   Updated: 2025/05/04 14:52:05 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,12 @@ namespace scop{
 
 		if (vkCreateShaderModule(_device->_device(), &createInfo, nullptr, shaderModule) != VK_SUCCESS)
 			throw std::runtime_error("failed to create shader module");
+	}
+
+	PipelineConfigInfo pipeline::defaultPiplineConfigInfo(uint32_t width, uint32_t height) {
+		PipelineConfigInfo	result{};
+
+		return (result);
 	}
 	//Scop::Scop() {};
 
