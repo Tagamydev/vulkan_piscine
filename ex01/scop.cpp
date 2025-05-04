@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 00:33:57 by samusanc          #+#    #+#             */
-/*   Updated: 2025/05/03 22:15:49 by samusanc         ###   ########.fr       */
+/*   Updated: 2025/05/03 22:43:34 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,12 +37,12 @@ namespace scop{
 		return glfwWindowShouldClose(_window);
 	}
 
-	pipeline::pipeline(std::string& vertFilepath, std::string& fragFilepath) { createGraphicsPipeline(vertFilepath, fragFilepath); };
+	pipeline::pipeline(std::string vertFilepath, std::string fragFilepath) { createGraphicsPipeline(vertFilepath, fragFilepath); };
 
 	std::vector<char> pipeline::readFile(const std::string& filepath) {
 		std::ifstream file{filepath, std::ios::ate | std::ios::binary};
 
-		if (file.is_open())
+		if (!file.is_open())
 			throw std::runtime_error("failed to open file: " + filepath);
 
 		size_t	fileSize = static_cast<size_t>(file.tellg());

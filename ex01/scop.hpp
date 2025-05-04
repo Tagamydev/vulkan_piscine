@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/02 23:26:38 by samusanc          #+#    #+#             */
-/*   Updated: 2025/05/03 20:15:54 by samusanc         ###   ########.fr       */
+/*   Updated: 2025/05/03 22:40:45 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ namespace scop {
 
 	class pipeline{
 		public:
-			pipeline(std::string& vertFilepath, std::string& fragFilepath);
+			pipeline(std::string vertFilepath, std::string fragFilepath);
 			
 		private:
 			static std::vector<char> readFile(const std::string& filepath);
@@ -64,6 +64,7 @@ namespace scop {
 
 		private:
 			scop::window	_window{WIDTH, HEIGHT, "scop"};
+			scop::pipeline	_pipeline{"shaders/simple_shader.vert.spv", "shaders/simple_shader.frag.spv"};
 	};
 }
 
