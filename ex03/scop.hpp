@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/02 23:26:38 by samusanc          #+#    #+#             */
-/*   Updated: 2025/05/04 15:40:50 by samusanc         ###   ########.fr       */
+/*   Updated: 2025/05/05 11:05:57 by smsanchez        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ namespace scop {
 				std::string fragFilepath,
 				const PipelineConfigInfo &configInfo
 			);
-			~pipeline() {};
+			~pipeline();
 
 			pipeline(const pipeline &) = delete;
 			pipeline &operator=(const pipeline &) = delete;

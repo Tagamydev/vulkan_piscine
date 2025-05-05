@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 00:33:57 by samusanc          #+#    #+#             */
-/*   Updated: 2025/05/04 17:24:16 by samusanc         ###   ########.fr       */
+/*   Updated: 2025/05/05 11:40:24 by smsanchez        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <stdexcept>
 #include <vector>
 #include <vulkan/vulkan_core.h>
+#include <cassert>
 
 namespace scop{
 
@@ -49,6 +50,12 @@ namespace scop{
 		createGraphicsPipeline(vertFilepath, fragFilepath, configInfo);
 	}
 
+	pipeline::~pipeline() {
+		vkDestroyShaderModule(this->_device->_device(), _vertShaderModule, nullptr);
+		vkDestroyShaderModule(this->_device->_device(), _fragShaderModule, nullptr);
+		vkDestroyPipeline(this->_device->_device(), this->_graphicsPipeline, nullptr);
+	}
+
 	std::vector<char> pipeline::readFile(const std::string& filepath) {
 		std::ifstream file{filepath, std::ios::ate | std::ios::binary};
 
@@ -65,10 +72,67 @@ namespace scop{
 	}
 
 	void	pipeline::createGraphicsPipeline(std::string& vertFilepath, std::string& fragFilepath, const PipelineConfigInfo &configInfo) {
-		auto x = readFile(vertFilepath);
-		auto y = readFile(fragFilepath);
 
+		/*
+		assert(configInfo.pipelineLayout != VK_NULL_HANDLE && 
+				"Cannot create graphics pipeline:: no pipelineLayout provided in configInfo");
+		assert(configInfo.renderPass != VK_NULL_HANDLE && 
+				"Cannot create graphics pipeline:: no renderPass provided in configInfo");
+				*/
 
+		auto vertCode = readFile(vertFilepath);
+		auto fragCode = readFile(fragFilepath);
+
+		createShaderModule(vertCode, &this->_vertShaderModule);
+		createShaderModule(fragCode, &this->_fragShaderModule);
+		VkPipelineShaderStageCreateInfo	shaderStages[2];
+		shaderStages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		shaderStages[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
+		shaderStages[0].module = _vertShaderModule;
+		shaderStages[0].pName = "main";
+		shaderStages[0].flags = 0;
+		shaderStages[0].pNext = nullptr;
+		shaderStages[0].pSpecializationInfo = nullptr;
+
+		shaderStages[1].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		shaderStages[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+		shaderStages[1].module = _fragShaderModule;
+		shaderStages[1].pName = "main";
+		shaderStages[1].flags = 0;
+		shaderStages[1].pNext = nullptr;
+		shaderStages[1].pSpecializationInfo = nullptr;
+
+		VkPipelineVertexInputStateCreateInfo	vertexInputInfo{};
+		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+		vertexInputInfo.vertexAttributeDescriptionCount = 0;
+		vertexInputInfo.vertexBindingDescriptionCount = 0;
+		vertexInputInfo.pVertexAttributeDescriptions = nullptr;
+		vertexInputInfo.pVertexBindingDescriptions = nullptr;
+
+		VkGraphicsPipelineCreateInfo	pipelineInfo{};
+		pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+		pipelineInfo.stageCount = 2;
+		pipelineInfo.pStages = shaderStages;
+		pipelineInfo.pVertexInputState = &vertexInputInfo;
+		pipelineInfo.pInputAssemblyState = &configInfo.inputAssemblyInfo;
+		pipelineInfo.pViewportState = &configInfo.viewportInfo;
+
+		pipelineInfo.pRasterizationState = &configInfo.rasterizationInfo;
+		pipelineInfo.pMultisampleState = &configInfo.multisampleInfo;
+
+		pipelineInfo.pColorBlendState = &configInfo.colorBlendInfo;
+		pipelineInfo.pDepthStencilState = &configInfo.depthStencilInfo;
+		pipelineInfo.pDynamicState = nullptr;
+
+		pipelineInfo.layout = configInfo.pipelineLayout;
+		pipelineInfo.renderPass = configInfo.renderPass;
+		pipelineInfo.subpass = configInfo.subpass;
+
+		pipelineInfo.basePipelineIndex = -1;
+		pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+
+		if (vkCreateGraphicsPipelines(this->_device->_device(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &_graphicsPipeline) != VK_SUCCESS)
+			throw std::runtime_error("failed to create pipeline");
 	};
 
 	void	pipeline::createShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule) {
@@ -99,6 +163,7 @@ namespace scop{
 		info.pViewports = &result.viewport;
 		info.scissorCount = 1;
 		info.pScissors = &result.scissor;
+		info.pNext = nullptr;
 	}
 
 	void	initAssemblyDefaultConfig(PipelineConfigInfo &result) {
@@ -107,6 +172,9 @@ namespace scop{
 		assembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 		assembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 		assembly.primitiveRestartEnable = VK_FALSE;
+
+		assembly.flags = 0;
+		assembly.pNext = nullptr;
 	}
 
 	void	initRasterizationDefaultConfig(PipelineConfigInfo &result) {
@@ -123,6 +191,10 @@ namespace scop{
 		info.depthBiasConstantFactor = 0.0f;
 		info.depthBiasClamp = 0.0f;
 		info.depthBiasSlopeFactor = 0.0f;
+
+		info.flags = 0;
+		info.pNext = nullptr;
+
 	}
 
 	void	initMultisampleDefaultConfig(PipelineConfigInfo &result) {
@@ -135,6 +207,10 @@ namespace scop{
 		info.pSampleMask = nullptr;
 		info.alphaToCoverageEnable = VK_FALSE;
 		info.alphaToOneEnable = VK_FALSE;
+
+		info.flags = 0;
+		info.pNext = nullptr;
+
 	}
 
 	void	initColorBlendDefaultConfig(PipelineConfigInfo &result) {
@@ -161,6 +237,10 @@ namespace scop{
 		info.blendConstants[1] = 0.0f;
 		info.blendConstants[2] = 0.0f;
 		info.blendConstants[3] = 0.0f;
+
+		info.flags = 0;
+		info.pNext = nullptr;
+
 	}
 
 	void	initDepthStencilDefaultConfig(PipelineConfigInfo &result) {
@@ -176,11 +256,15 @@ namespace scop{
 		info.stencilTestEnable = VK_FALSE;
 		info.front = {};
 		info.back = {};
+
+		info.flags = 0;
+		info.pNext = nullptr;
+
 	}
 
 	PipelineConfigInfo pipeline::defaultPiplineConfigInfo(uint32_t width, uint32_t height) {
 		// pipeline = assembly -> rasterization ->
-		PipelineConfigInfo						result;
+		PipelineConfigInfo						result{};
 
 		initViewportDefaultConfig(result, width, height);
 		initAssemblyDefaultConfig(result);

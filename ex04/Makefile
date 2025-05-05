@@ -6,7 +6,7 @@
 #    By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/06/24 19:28:25 by samusanc          #+#    #+#              #
-#    Updated: 2025/05/05 11:36:40 by smsanchez        ###   ########.fr        #
+#    Updated: 2025/05/05 12:11:04 by smsanchez        ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,12 +21,18 @@ FRAG		=	./shaders/simple_shader.frag \
 
 VERT		=	./shaders/simple_shader.vert \
 
-INC			=	./scop.hpp \
-				./device.hpp \
+INC			=	./lve_swap_chain.hpp \
+				./lve_window.hpp \
+				./first_app.hpp \
+				./lve_device.hpp \
+				./lve_pipeline.hpp \
 
 SRCS		=	$(MAIN) \
-				./scop.cpp \
-				./device.cpp \
+				./lve_swap_chain.cpp \
+				./lve_window.cpp \
+				./first_app.cpp \
+				./lve_device.cpp \
+				./lve_pipeline.cpp \
 
 O_DIR		=	./objects/
 
